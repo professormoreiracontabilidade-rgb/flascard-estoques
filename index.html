@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards Teóricos CPC 16</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial, Helvetica, sans-serif;
+  background:#061733;
+  color:white;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:10px;
+}
+.app{
+  width:100%;
+  max-width:430px;
+  min-height:94vh;
+  background:#08224d;
+  border:4px solid #fff;
+  border-radius:24px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 0 25px rgba(0,0,0,.45);
+}
+header{
+  background:#031126;
+  padding:14px 10px;
+  text-align:center;
+  border-bottom:3px solid #fff;
+}
+header h1{
+  font-size:23px;
+  color:#ffdd57;
+  line-height:1.15;
+}
+header p{
+  font-size:15px;
+  color:#dbeafe;
+  margin-top:6px;
+}
+main{
+  flex:1;
+  position:relative;
+  overflow:hidden;
+}
+.screen{
+  display:none;
+  height:100%;
+  padding:18px 14px 112px;
+  overflow-y:auto;
+}
+.screen.active{display:block}
+h2{
+  font-size:27px;
+  line-height:1.2;
+  color:#ffdd57;
+  margin-bottom:12px;
+  text-align:center;
+}
+p,li{
+  font-size:20px;
+  line-height:1.38;
+  margin-bottom:10px;
+}
+ul{padding-left:22px;margin:8px 0}
+.card{
+  background:#0f3a78;
+  border:2px solid #fff;
+  border-radius:18px;
+  padding:16px;
+  margin:12px 0;
+}
+.badge{
+  display:inline-block;
+  background:#ffdd57;
+  color:#031126;
+  font-weight:bold;
+  padding:7px 10px;
+  border-radius:999px;
+  margin:4px 3px 8px 0;
+  font-size:14px;
+}
+.flash{
+  perspective:1000px;
+  margin:18px 0;
+  min-height:520px;
+}
+.flash-inner{
+  position:relative;
+  width:100%;
+  min-height:520px;
+  transition:transform .7s;
+  transform-style:preserve-3d;
+  cursor:pointer;
+}
+.flash.flipped .flash-inner{
+  transform:rotateY(180deg);
+}
+.face{
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+  border-radius:28px;
+  border:4px solid #ffffff;
+  padding:22px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  box-shadow:0 12px 24px rgba(0,0,0,.35);
+}
+.front{
+  background:#ffb6d5;
+  color:#3b0820;
+}
+.back{
+  background:#15803d;
+  color:#ffffff;
+  transform:rotateY(180deg);
+}
+.front h2{
+  color:#7a123c;
+  font-size:31px;
+}
+.back h2{
+  color:#dcfce7;
+  font-size:29px;
+}
+.bigicon{
+  font-size:62px;
+  margin-bottom:14px;
+}
+.cardnum{
+  background:#ffffff;
+  color:#031126;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:17px;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+.tap{
+  text-align:center;
+  color:#ffdd57;
+  font-size:19px;
+  font-weight:bold;
+  margin:10px 0;
+}
+nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:430px;
+  background:#031126;
+  border-top:3px solid white;
+  padding:9px;
+}
+.btnrow{
+  display:flex;
+  gap:7px;
+}
+button{
+  flex:1;
+  border:0;
+  border-radius:13px;
+  padding:12px 6px;
+  background:#ffdd57;
+  color:#031126;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:active{transform:scale(.96)}
+.progress{
+  font-size:14px;
+  text-align:center;
+  color:#dbeafe;
+  margin-top:7px;
+}
+.footer{
+  font-size:13px;
+  text-align:center;
+  color:#fff;
+  font-weight:bold;
+  margin-top:5px;
+}
+.startbtn{
+  width:100%;
+  margin-top:10px;
+  font-size:22px;
+  padding:16px;
+}
+@media(max-height:760px){
+  .flash,.flash-inner{min-height:430px}
+  .front h2{font-size:27px}
+  .back h2{font-size:25px}
+  p,li{font-size:18px}
+  .screen{padding-bottom:105px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>🃏 FLASHCARDS TEÓRICOS CPC 16</h1>
+  <p>Frente rosa • Verso verde</p>
+</header>
+
+<main id="main"></main>
+
+<nav>
+  <div class="btnrow">
+    <button onclick="prevCard()">⬅ Voltar</button>
+    <button onclick="restart()">🔄 Reiniciar</button>
+    <button onclick="nextCard()">Avançar ➡</button>
+  </div>
+  <div class="progress" id="progress"></div>
+  <div class="footer">Curso de Contabilidade Professor Moreira</div>
+</nav>
+</div>
+
+<script>
+const cards = [{"front": "📦 O que são estoques?", "back": "Estoques são ativos mantidos para venda no curso normal dos negócios, em processo de produção para venda ou na forma de materiais e suprimentos a serem consumidos na produção ou na prestação de serviços."}, {"front": "🎯 Qual é o objetivo do CPC 16?", "back": "Estabelecer o tratamento contábil dos estoques, especialmente a determinação do custo, o reconhecimento como ativo, a baixa como despesa e o ajuste ao valor realizável líquido."}, {"front": "⭐ Qual é a regra principal de mensuração dos estoques?", "back": "Os estoques devem ser mensurados pelo menor valor entre o custo e o valor realizável líquido."}, {"front": "💰 O que é valor realizável líquido?", "back": "É o preço de venda estimado no curso normal dos negócios, deduzido dos custos estimados para conclusão e dos gastos estimados necessários para realizar a venda."}, {"front": "🧮 Fórmula do valor realizável líquido", "back": "VRL = Preço de venda estimado − Custos para conclusão − Gastos necessários para vender."}, {"front": "📉 Quando o estoque deve ser reduzido ao VRL?", "back": "Quando o custo não for recuperável, por exemplo, por dano, obsolescência, queda no preço de venda ou aumento dos custos necessários para concluir ou vender."}, {"front": "🕰 O que é obsolescência?", "back": "É a perda de utilidade econômica do estoque. Produto ultrapassado, vencido, deteriorado ou sem mercado pode exigir ajuste ao valor realizável líquido."}, {"front": "🧾 O que entra no custo dos estoques?", "back": "Entram os custos de aquisição, os custos de transformação e outros custos necessários para colocar o estoque em sua localização e condição atuais."}, {"front": "📥 O que compõe o custo de aquisição?", "back": "Preço de compra, impostos de importação, tributos não recuperáveis, transporte, seguro, manuseio e outros gastos diretamente atribuíveis à aquisição."}, {"front": "🚚 Frete sobre compras entra no estoque?", "back": "Sim. O frete sobre compras integra o custo do estoque quando necessário para trazer o estoque até sua localização atual."}, {"front": "🚚 Frete sobre vendas entra no estoque?", "back": "Não. Frete sobre vendas é despesa comercial e deve ser reconhecido no resultado."}, {"front": "🧾 Tributos recuperáveis entram no custo?", "back": "Não. Tributos recuperáveis, como ICMS recuperável, são registrados como direitos no ativo e não compõem o custo do estoque."}, {"front": "🧾 Tributos não recuperáveis entram no custo?", "back": "Sim. Tributos não recuperáveis junto ao Fisco integram o custo de aquisição do estoque."}, {"front": "🌎 Imposto de importação entra no custo?", "back": "Sim. O imposto de importação é normalmente um tributo não recuperável e compõe o custo do estoque."}, {"front": "🏷 Desconto comercial entra no custo?", "back": "O desconto comercial reduz o custo de aquisição do estoque."}, {"front": "💳 Desconto financeiro reduz o estoque?", "back": "Não. Desconto financeiro não altera o custo do estoque. Normalmente é reconhecido como receita financeira."}, {"front": "⏳ Compra a prazo com juros embutidos", "back": "Quando a compra a prazo contém elemento de financiamento, o estoque deve ser reconhecido pelo preço à vista. A diferença é despesa financeira ao longo do prazo."}, {"front": "🏭 O que são custos de transformação?", "back": "São custos necessários para transformar matérias-primas e materiais em produtos acabados, como mão de obra direta e custos indiretos de produção."}, {"front": "👷 Mão de obra direta entra no estoque?", "back": "Sim. A mão de obra diretamente relacionada à produção integra o custo de transformação dos estoques."}, {"front": "🏢 Custos indiretos de fabricação entram no estoque?", "back": "Sim. Custos indiretos de produção fixos e variáveis são alocados aos estoques, desde que relacionados à produção."}, {"front": "📉 Ociosidade entra no estoque?", "back": "Não. Custos fixos não alocados por baixo volume de produção ou ociosidade devem ser reconhecidos como despesa do período."}, {"front": "🚨 Desperdício anormal entra no estoque?", "back": "Não. Valor anormal de desperdício de materiais, mão de obra ou outros insumos deve ser reconhecido como despesa do período."}, {"front": "🏬 Armazenamento entra no estoque?", "back": "Em regra, não. Só entra quando for necessário ao processo produtivo entre uma fase e outra da produção."}, {"front": "📚 Despesas administrativas entram no estoque?", "back": "Não entram quando não contribuem para colocar o estoque em sua localização e condição atuais."}, {"front": "📢 Despesas comerciais entram no estoque?", "back": "Não. Comissão de vendedores, propaganda, entrega ao cliente e despesas de comercialização são despesas do período."}, {"front": "🥇 O que é PEPS?", "back": "PEPS significa Primeiro que Entra, Primeiro que Sai. Pressupõe que os itens comprados ou produzidos primeiro são vendidos primeiro."}, {"front": "⚖ O que é custo médio ponderado?", "back": "É o critério em que o custo dos itens é determinado pela média ponderada dos custos dos itens existentes e dos comprados ou produzidos no período."}, {"front": "🎯 Quando usar identificação específica?", "back": "Quando os itens não são normalmente intercambiáveis ou quando são produzidos e segregados para projetos específicos."}, {"front": "🚫 O UEPS é permitido pelo CPC 16?", "back": "Não. O CPC 16 permite PEPS e custo médio ponderado, mas não permite UEPS."}, {"front": "🏪 O que é método de varejo?", "back": "É método usado no varejo para mensurar estoques de muitos itens com margens semelhantes, reduzindo o preço de venda pela margem bruta apropriada."}, {"front": "🏭 O que é custo-padrão?", "back": "É uma forma de mensuração que considera níveis normais de materiais, mão de obra e eficiência. Pode ser usada se aproximar o custo real."}, {"front": "📉 Lançamento do ajuste ao VRL", "back": "D – Perda com Estoques / C – Perda Estimada para Ajuste ao Valor Realizável Líquido."}, {"front": "📌 Natureza da perda estimada para ajuste ao VRL", "back": "É conta redutora do ativo, com natureza credora, reduzindo o valor contábil dos estoques."}, {"front": "🔄 A perda ao VRL pode ser revertida?", "back": "Sim. A reversão é permitida quando as circunstâncias que causaram a perda deixarem de existir, limitada ao valor da perda anteriormente reconhecida."}, {"front": "📦 Quando o estoque vendido vira despesa?", "back": "Quando o estoque é vendido, seu custo deve ser reconhecido como despesa no mesmo período em que a receita correspondente é reconhecida."}, {"front": "📊 Lançamento da baixa do estoque vendido", "back": "D – Custo das Mercadorias Vendidas / C – Estoques."}, {"front": "📊 Fórmula do CMV", "back": "CMV = Estoque Inicial + Compras Líquidas − Estoque Final."}, {"front": "📦 Estoques em trânsito", "back": "Podem ser reconhecidos como estoque quando os riscos, benefícios ou controle já forem da empresa compradora, ainda que fisicamente estejam em transporte."}, {"front": "🌱 Produto agrícola colhido", "back": "O produto agrícola colhido de ativo biológico entra no estoque pelo valor justo deduzido dos gastos estimados no ponto de venda no momento da colheita."}, {"front": "📑 O que deve ser divulgado sobre estoques?", "back": "Políticas contábeis, critérios de valoração, valores escriturados, estoques reconhecidos como despesa, perdas, reversões e estoques dados em garantia."}, {"front": "🔥 Pegadinha: valor justo é sempre igual ao VRL?", "back": "Não. O valor realizável líquido é específico da entidade; o valor justo reflete uma transação de mercado. Eles podem ser diferentes."}, {"front": "🔥 Pegadinha: preço de reposição aumenta o estoque?", "back": "Não necessariamente. O estoque não é aumentado apenas porque o preço de reposição subiu. A regra é menor entre custo e VRL."}, {"front": "🔥 Pegadinha: comissão de vendedor", "back": "Comissão de vendedor não compõe o custo do estoque. É despesa de venda ou comercial."}, {"front": "🔥 Pegadinha: propaganda", "back": "Propaganda e marketing não entram no custo do estoque. São despesas do período."}, {"front": "🔥 Pegadinha: bens para revenda usados em exposição", "back": "Se a finalidade principal continua sendo a venda no curso normal dos negócios, permanecem classificados como estoque."}];
+let current = 0;
+const main = document.getElementById('main');
+
+function render(){
+  let html = `
+  <section class="screen active" id="intro">
+    <h2>📘 CPC 16 – Estoques</h2>
+    <div class="card">
+      <span class="badge">📱 Celular</span>
+      <span class="badge">🃏 Flashcards</span>
+      <span class="badge">🎯 Teoria</span>
+      <p>Estude a teoria em cartões. A frente está em rosa e o verso em verde.</p>
+      <p>Toque no cartão para virar.</p>
+      <button class="startbtn" onclick="goTo(1)">▶ Começar</button>
+    </div>
+  </section>`;
+
+  cards.forEach((c,i)=>{
+    html += `
+    <section class="screen">
+      <div class="tap">👇 Aperte o flashcard para virar</div>
+      <div class="flash" onclick="this.classList.toggle('flipped')">
+        <div class="flash-inner">
+          <div class="face front">
+            <div class="cardnum">Cartão ${i+1} de ${cards.length}</div>
+            <div class="bigicon">🧠</div>
+            <h2>${c.front}</h2>
+          </div>
+          <div class="face back">
+            <div class="cardnum">Resposta / Teoria</div>
+            <div class="bigicon">✅</div>
+            <h2>${c.back}</h2>
+          </div>
+        </div>
+      </div>
+    </section>`;
+  });
+
+  html += `
+  <section class="screen">
+    <h2>🏁 Fim dos Flashcards</h2>
+    <div class="card">
+      <p>Parabéns! Você concluiu os flashcards teóricos do CPC 16 – Estoques.</p>
+      <p>Repita até conseguir lembrar a resposta antes de virar o cartão.</p>
+      <button class="startbtn" onclick="restart()">🔄 Estudar novamente</button>
+    </div>
+  </section>`;
+
+  main.innerHTML = html;
+  show(current);
+}
+
+function show(index){
+  const screens = document.querySelectorAll('.screen');
+  if(index < 0) index = 0;
+  if(index >= screens.length) index = screens.length - 1;
+  current = index;
+  screens.forEach(s => {
+    s.classList.remove('active');
+    const f = s.querySelector('.flash');
+    if(f) f.classList.remove('flipped');
+  });
+  screens[current].classList.add('active');
+  localStorage.setItem('flashcards_cpc16_teoria_current', current);
+  updateProgress();
+  window.scrollTo(0,0);
+}
+
+function goTo(i){ show(i); }
+function nextCard(){ show(current + 1); }
+function prevCard(){ show(current - 1); }
+function restart(){ show(0); }
+
+function updateProgress(){
+  const total = cards.length + 2;
+  let texto = `Tela ${current + 1} de ${total}`;
+  if(current > 0 && current <= cards.length){
+    texto += ` • Cartão ${current} de ${cards.length}`;
+  }
+  document.getElementById('progress').innerText = texto;
+}
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'ArrowRight') nextCard();
+  if(e.key === 'ArrowLeft') prevCard();
+});
+
+const saved = parseInt(localStorage.getItem('flashcards_cpc16_teoria_current'));
+if(!isNaN(saved)) current = saved;
+
+render();
+</script>
+</body>
+</html>
